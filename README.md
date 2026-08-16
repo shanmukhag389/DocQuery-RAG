@@ -14,28 +14,33 @@ Most tutorial-level RAG projects use pure vector (embedding) search, which has a
 - **LLM-as-Judge Evaluation:** Faithfulness and context-relevance are scored automatically per query, the same underlying approach used by evaluation frameworks like RAGAS.
 
 ## Architecture
-PDF → PyMuPDF (text extraction) → LangChain (chunking, 1000 chars / 150 overlap)
-│
-▼
-Gemini Embeddings (gemini-embedding-001, 768-dim)
-│
-┌─────────────┴─────────────┐
-▼ ▼
-Qdrant Cloud BM25 Index
-(dense/vector search) (sparse/keyword search)
-│ │
-└─────────────┬──────────────┘
-▼
-Reciprocal Rank Fusion (RRF)
-│
-▼
-FlashRank Cross-Encoder Re-ranking
-│
-▼
-Gemini Generation (grounded, context-only)
-│
-▼
-LLM-as-Judge Evaluation (Faithfulness + Relevance)
+
+                       [ DOCUMENT INGESTION ]
+                                 │
+                                 ▼
+         PDF ──> PyMuPDF ──> LangChain (1000 chars / 150 overlap)
+                                 │
+                                 ▼
+             Gemini Embeddings (gemini-embedding-001, 768-dim)
+                                 │
+                   ┌─────────────┴─────────────┐
+                   ▼                           ▼
+             Qdrant Cloud                 BM25 Index
+         (Dense/Vector Search)       (Sparse/Keyword Search)
+                   │                           │
+                   └─────────────┬─────────────┘
+                                 ▼
+                    Reciprocal Rank Fusion (RRF)
+                                 │
+                                 ▼
+                FlashRank Cross-Encoder Re-ranking
+                                 │
+                                 ▼
+                    Gemini Generation (Grounded)
+                                 │
+                                 ▼
+               LLM-as-Judge (Faithfulness + Relevance)
+
 
 ## Tech Stack
 
